@@ -77,16 +77,16 @@ struct S_Feld
 };
 
 
-//Unveränderbare variablen
+//Unverï¿½nderbare variablen
 const int iBreite = 15;
 const int iHoehe = 15;
 
 
 //Arrar
-//fürs spielfeld
+//fï¿½rs spielfeld
 S_Feld Spielfeld[iBreite][iHoehe];
 
-//für ausgewähltes feld
+//fï¿½r ausgewï¿½hltes feld
 S_Feld Ausgewaehlt[iBreite][iHoehe];
 
 
@@ -190,7 +190,7 @@ void Feldauswahl()
      
      do{
      cBewegung = getchar();
-     }while(cBewegung<0); //behebt Bug bei drücken von Pfeiltasten
+     }while(cBewegung<0); //behebt Bug bei drï¿½cken von Pfeiltasten
      
      if((cBewegung == 72))
      {
