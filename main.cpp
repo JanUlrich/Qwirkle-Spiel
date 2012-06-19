@@ -1,8 +1,8 @@
 #include <cstdlib>
 #include <iostream>
-//#include <conio.h>
+#include <conio.h>
 #include <stdio.h>
-//#include <windows.h>
+#include <windows.h>
 #include <time.h>
 #include "Farbe.h"
 
@@ -42,7 +42,7 @@ int Punkte;
 
 
 
-//Unver�nderbare variablen
+//Unverï¿½nderbare variablen
 const int iBreite = 15;
 const int iHoehe = 15;
 const int spielsteinBeutelGroesse = 7; //spielsteinBeutelGroesse muss kleiner als 10 sein!
@@ -51,10 +51,10 @@ const int anzahlFarben=2;
 const int anzahlFormen=4;
 
 //Arrar
-//f�rs spielfeld
+//fï¿½rs spielfeld
 S_Feld Spielfeld[iBreite][iHoehe];
 
-//f�r ausgew�hltes feld
+//fï¿½r ausgewï¿½hltes feld
 S_Feld Ausgewaehlt[iBreite][iHoehe];
 
 //Der Spielsteinbeutel des Spielers:
@@ -212,7 +212,7 @@ void Feldauswahl()
      
      do{
      cBewegung = gibZeichen();
-     }while(cBewegung<0); //behebt Bug bei dr�cken von Pfeiltasten
+     }while(cBewegung<0); //behebt Bug bei drï¿½cken von Pfeiltasten
      
      if((cBewegung == 72))
      {
@@ -248,14 +248,14 @@ void Feldauswahl()
      }
      
 
-     else if (cBewegung == (char) 115){ //115 == 's'
+     else if (cBewegung == (char) 13){ //115 == 's' 13 == Enter
 
     	 setzeSpielstein(spielsteinBeutel,spielsteinAuswaehlen(spielsteinBeutel),x,y);
     	 	//break;
            }
 
      ZeigeSpielfeld();
-}while(cBewegung != 115);
+}while(cBewegung != 13);
 }
 
 void setzeSpielstein(Spielstein * ausBeutel[spielsteinBeutelGroesse], int spielsteinNr, int x, int y)
@@ -269,8 +269,8 @@ int spielsteinAuswaehlen(Spielstein * beutel[spielsteinBeutelGroesse])
 {
 	zeigeSpielsteine(beutel);
 	int spielsteinNr;
-	do{ //funktioniert nur für spielsteinBeutelGroesse<10
-		printf("Zum Auswählen des Spielsteins seine Nummer eingeben:");
+	do{ //funktioniert nur fÃ¼r spielsteinBeutelGroesse<10
+		printf("Zum AuswÃ¤hlen des Spielsteins seine Nummer eingeben:");
 		spielsteinNr = (int) gibZeichen()-49;
 	}while(spielsteinNr<0 || spielsteinNr>spielsteinBeutelGroesse || beutel[spielsteinNr]==0);
 	return spielsteinNr;
@@ -308,8 +308,9 @@ bool checkReihe(int Reihe[][2]){
 
 char gibZeichen()
 {
-	char c = getchar();
-	getchar();
+	char c = getch();
+	//printf("%d",c); //Für Debug-Zwecke
+	//getchar();
 	return c;
 }
 
