@@ -10,11 +10,26 @@
 //Vincent Musch
 //Spielfeld Qwikle (1)
 //15.02.2012
+#define FarbeBlau    1
+#define FarbeRot     2
 
-//prototyp
-void ZeigeSpielfeld();
-void Feldauswahl();
-//void darfsetzen(int x, int y, int farbe, int form);
+struct Spielstein
+{
+       int farbe;
+       char form;
+};
+
+//Variablen mit "Eigenschaften"
+struct S_Feld
+{
+       bool Besetzt;
+       bool Ausgeweahlt;
+       bool punkterechnung;
+       
+       Spielstein * spielstein;
+       
+};
+
 
 using namespace std;
 
@@ -24,63 +39,16 @@ using namespace std;
 
 char cBewegung;
 int Punkte;
-bool cansetr1 = true;
-bool cansetr2 = true;
-bool cansetr3 = true;
-bool cansetr4 = true;
-bool cansetr5 = true;
 
-bool cansetb1 = true;
-bool cansetb2 = true;
-bool cansetb3 = true;
-bool cansetb4 = true;
-bool cansetb5 = true;
-
-bool cansetg1 = true;
-bool cansetg2 = true;
-bool cansetg3 = true;
-bool cansetg4 = true;
-bool cansetg5 = true;
-
-bool cansetge1 = true;
-bool cansetge2 = true;
-bool cansetge3 = true;
-bool cansetge4 = true;
-bool cansetge5 = true;
-
-bool cansetp1 = true;
-bool cansetp2 = true;
-bool cansetp3 = true;
-bool cansetp4 = true;
-bool cansetp5 = true;
-
-#define FarbeBlau    1
-#define FarbeRot     2
-#define Form1        1
-
-struct Spielstein
-{
-       int farbe;
-       char form;
-       
-       };
-
-//Variablen mit "Eigenschaften"
-struct S_Feld
-{
-       bool Besetzt;
-       bool Ausgeweahlt;
-       bool punkterechnung;
-       
-       Spielstein spielstein;
-       
-};
 
 
 //Unver�nderbare variablen
 const int iBreite = 15;
 const int iHoehe = 15;
-
+const int spielsteinBeutelGroesse = 7; //spielsteinBeutelGroesse muss kleiner als 10 sein!
+const int anzahlSpielsteine = 100;
+const int anzahlFarben=2;
+const int anzahlFormen=4;
 
 //Arrar
 //f�rs spielfeld
@@ -89,9 +57,24 @@ S_Feld Spielfeld[iBreite][iHoehe];
 //f�r ausgew�hltes feld
 S_Feld Ausgewaehlt[iBreite][iHoehe];
 
+//Der Spielsteinbeutel des Spielers:
+Spielstein * spielsteinBeutel[spielsteinBeutelGroesse];
 
+//Alle Spielsteine des Spiels:
+Spielstein * spielsteine[anzahlSpielsteine];
 
-
+//prototyp
+void ZeigeSpielfeld();
+void Feldauswahl();
+Spielstein * gibSpielstein();
+void zeigeSpielsteine(Spielstein * beutel[spielsteinBeutelGroesse]);
+int spielsteinAuswaehlen(Spielstein * beutel[spielsteinBeutelGroesse]);
+void spielsteinAnzeigen(Spielstein * st);
+void fuelleSpielsteinBeutel(Spielstein * beutel[spielsteinBeutelGroesse]);
+void initialisiereSpielsteine();
+char gibZeichen();
+void setzeSpielstein(Spielstein * ausBeutel[spielsteinBeutelGroesse], int spielsteinNr, int x, int y);
+//void darfsetzen(int x, int y, int farbe, int form);
 
 int main(int argc, char *argv[])
 {
@@ -103,13 +86,15 @@ int main(int argc, char *argv[])
                  Spielfeld[xi][yi].Besetzt = false;
              }
       }
+      initialisiereSpielsteine();
+      fuelleSpielsteinBeutel(spielsteinBeutel);
     //Lokale Variable
     char chauswahl;
   do{   
     printf("Feld Anzeigen(1)\n");
     printf("Feld Besetzten(2)\n");
     printf("Spiel Beenden(3)\n");
-    chauswahl = getchar();
+    chauswahl = gibZeichen();
 
     if(chauswahl == '1')
     {
@@ -120,8 +105,6 @@ int main(int argc, char *argv[])
           ZeigeSpielfeld();
           Feldauswahl();
           //darfsetzen();
-
-        
     }
     
     else if(chauswahl == '3')
@@ -139,10 +122,53 @@ int main(int argc, char *argv[])
 
 }
 
+
+void initialisiereSpielsteine()
+{
+ char form = 'A';
+	int farben[anzahlFarben]={FarbeRot, FarbeBlau};
+	int formNr=0;
+	int farbenNr=0;
+	for(int i=0;i<anzahlSpielsteine;i++)
+	{
+		formNr++;
+		formNr=formNr%anzahlFormen;
+		if(formNr==0)
+		{
+		farbenNr++;
+		farbenNr=farbenNr%anzahlFarben;
+		}
+		Spielstein *st = new Spielstein;
+		st->farbe=farben[farbenNr];
+		st->form=(char)(form+formNr);
+		spielsteine[i]=st;
+	}
+}
+
+Spielstein * gibSpielstein(){
+	for(int i=0;i<anzahlSpielsteine;i++)
+	{
+		if(spielsteine[i]!=0){
+			Spielstein * st = spielsteine[i];
+			spielsteine[i]=0; //Spielstein aus dem Pool entfernen
+			return st;
+		}
+	}
+	printf("Alle Spielsteine aufgebraucht! Spielende!");
+	return 0;//TODO Spiel beenden
+}
+
+void fuelleSpielsteinBeutel(Spielstein * beutel[spielsteinBeutelGroesse])
+{
+	for(int i=0;i<spielsteinBeutelGroesse;i++)
+	{
+		if(beutel[i]==0)beutel[i]=gibSpielstein();
+	}
+}
+
 void ZeigeSpielfeld()
 {
       //system("cls");
-     
      printf("%d\n",x);
      printf("%d\n",y);
      printf("%d\n",Punkte);
@@ -162,11 +188,7 @@ void ZeigeSpielfeld()
 
                      else if(Spielfeld[xi][yi].Besetzt == true)
                      {    
-                          //Farbe(Spielfeld[xi][yi].spielstein.farbe,0); 
-                          printf(" ");
-                          //printf("%c",Spielfeld[xi][yi].spielstein.form);
-                          printf(" ");
-                          //Farbe(15,0);
+                    	 spielsteinAnzeigen(Spielfeld[xi][yi].spielstein);
                      }
                     
                      else
@@ -189,7 +211,7 @@ void Feldauswahl()
       
      
      do{
-     cBewegung = getchar();
+     cBewegung = gibZeichen();
      }while(cBewegung<0); //behebt Bug bei dr�cken von Pfeiltasten
      
      if((cBewegung == 72))
@@ -208,7 +230,7 @@ void Feldauswahl()
          //Spielfeld[x][y].Besetzt = true;
      }
      
-     else if((cBewegung == 77))
+     else if((cBewegung == 77)||(cBewegung == 'a'))
      {
           //Nach Rechts
           x = x+1;
@@ -225,82 +247,57 @@ void Feldauswahl()
 
      }
      
-     /*
-     //fest Besetztn von stein rot 1
-     else if((cBewegung == '1')&&(cansetr1 == true))
-     {
-        Spielfeld[x][y].steinr1 = true;
-        Spielfeld[x][y].steinr1punkterechnung = true;
 
-     }
-     
-     //Stein rot 2
-     else if((cBewegung == '2')&&(cansetr2 == true))
-     {
-        Spielfeld[x][y].steinr2 = true;
-        Spielfeld[x][y].steinr2punkterechnung = true;
-     }
-     //Stein rot 3
-     else if((cBewegung == '3')&&(cansetr3 == true))
-     {
-        Spielfeld[x][y].steinr3 = true;
-        Spielfeld[x][y].steinr3punkterechnung = true;
-     }
-     //Stein rot 4
-     else if((cBewegung == '4')&&(cansetr4 == true))
-     {
-        Spielfeld[x][y].steinr4 = true;
-        Spielfeld[x][y].steinr4punkterechnung = true;
-     }
-     //Stein rot 5
-     else if((cBewegung == '5')&&(cansetr5 == true))
-     {
-        Spielfeld[x][y].steinr5 = true;
-        Spielfeld[x][y].steinr5punkterechnung = true;
-     }
-     
-     
-     
-     //Blaue steine
-     //Stein blau 1
-     else if((cBewegung == '6')&&(cansetb1 == true))
-     {
-        Spielfeld[x][y].steinb1 = true;
-        Spielfeld[x][y].steinb1punkterechnung = true;
-     }
-     //Stein blau 2
-     else if((cBewegung == '7')&&(cansetb2 == true))
-     {
-        Spielfeld[x][y].steinb2 = true;
-        Spielfeld[x][y].steinb2punkterechnung = true;
-     }
-     //Stein blau 3
-     else if((cBewegung == '8')&&(cansetb3 == true))
-     {
-        Spielfeld[x][y].steinb3 = true;
-        Spielfeld[x][y].steinb3punkterechnung = true;
-     }
-     //Stein blau 4
-     else if((cBewegung == '9')&&(cansetb4 == true))
-     {
-        Spielfeld[x][y].steinb4 = true;
-        Spielfeld[x][y].steinb4punkterechnung = true;
-     }
-     //Stein blau 4
-     else if((cBewegung == '0')&&(cansetb5 == true))
-     {
-        Spielfeld[x][y].steinb5 = true;
-        Spielfeld[x][y].steinb5punkterechnung = true;
-        
-     }*/
      else if (cBewegung == (char) 115){ //115 == 's'
-           Spielstein spielstein;
-           spielstein.form = (char)(cBewegung+63);
-           //break;
+
+    	 setzeSpielstein(spielsteinBeutel,spielsteinAuswaehlen(spielsteinBeutel),x,y);
+    	 	//break;
            }
+
+     ZeigeSpielfeld();
 }while(cBewegung != 115);
 }
 
+void setzeSpielstein(Spielstein * ausBeutel[spielsteinBeutelGroesse], int spielsteinNr, int x, int y)
+{
+	Spielfeld[x][y].spielstein = ausBeutel[spielsteinNr];
+	Spielfeld[x][y].Besetzt = true;
+	ausBeutel[spielsteinNr]=0;//Spielstein aus Beutel entfernen
+}
+
+int spielsteinAuswaehlen(Spielstein * beutel[spielsteinBeutelGroesse])
+{
+	zeigeSpielsteine(beutel);
+	int spielsteinNr;
+	do{ //funktioniert nur für spielsteinBeutelGroesse<10
+		printf("Zum Auswählen des Spielsteins seine Nummer eingeben:");
+		spielsteinNr = (int) gibZeichen()-49;
+	}while(spielsteinNr<0 || spielsteinNr>spielsteinBeutelGroesse || beutel[spielsteinNr]==0);
+	return spielsteinNr;
+}
+
+void zeigeSpielsteine(Spielstein * beutel[spielsteinBeutelGroesse])
+{
+	for(int i=0;i<spielsteinBeutelGroesse;i++)
+	{
+		printf("\n%d : ",i+1);
+		if(beutel[i]!=0)
+		{
+			spielsteinAnzeigen(beutel[i]);
+		}else{
+			//kein Spielstein an diesem Platz im Beutel!
+		}
+	}
+}
+
+void spielsteinAnzeigen(Spielstein * st)
+{
+	//Farbe(Spielfeld[xi][yi].spielstein.farbe,0);
+	printf(" ");
+	printf("%c",st->form);
+	printf(" ");
+	//Farbe(15,0);
+}
 
 bool checkReihe(int Reihe[][2]){
      for(int i;i<iBreite;i++)
@@ -309,6 +306,14 @@ bool checkReihe(int Reihe[][2]){
              }
      }       
 
+char gibZeichen()
+{
+	char c = getchar();
+	getchar();
+	return c;
+}
+
+/*
 bool darfsetzen(int x, int y, int farbe, int form)
 {
      if(Spielfeld[x][y].Besetzt == true)return false;
@@ -343,3 +348,4 @@ bool darfsetzen(int x, int y, int farbe, int form)
      return true;
 
 }
+*/
