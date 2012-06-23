@@ -29,10 +29,11 @@ int Punkte;
 //Unverï¿½nderbare variablen
 const int iBreite = 15;
 const int iHoehe = 15;
-const int spielsteinBeutelGroesse = 7; //spielsteinBeutelGroesse muss kleiner als 10 sein!
-const int anzahlSpielsteine = 100;
+const int spielsteinBeutelGroesse = 6;
+const int anzahlSpielsteine = 75;
 const int anzahlFarben=2;
 const int anzahlFormen=4;
+const char* speicherDateiNamen = "QwirkleSpeicherstand.dat";
 
 struct Spielstein
 {
@@ -60,6 +61,7 @@ struct Spieler
 	bool zugBeendet;
 	bool darfSteineTauschen;
 	int punktestand;
+	int zuletztGesetzterSpielsteinPos[2]; // [0] = X-Wert, [1] = Y-Wert
 	};
 
 //Arrar
@@ -67,7 +69,7 @@ struct Spieler
 S_Feld Spielfeld[iBreite][iHoehe];
 
 //fï¿½r ausgewï¿½hltes feld
-S_Feld Ausgewaehlt[iBreite][iHoehe];
+//S_Feld Ausgewaehlt[iBreite][iHoehe];
 
 
 
@@ -96,8 +98,61 @@ void beenden();
 void spielzugKI();
 void spielzugMenschlicherSpieler();
 int punkteRechnen(int x, int y);
+void neuerSpieler(bool bComputerGegner);
+void naechsterSpieler();
 
-void neuerSpieler(bool computerGegner){
+int main(int argc, char *argv[])
+{
+//Initialisierung:===============
+//alle felder = 0 setzen
+      for (int yi=0; yi<iHoehe; yi++)
+      {
+             for (int xi=0; xi<iBreite; xi++)
+             {
+                 Spielfeld[xi][yi].Besetzt = false;
+             }
+      }
+      initialisiereSpielsteine();
+//==============================
+      neuerSpieler(true); // einen Spieler erstellen
+      neuerSpieler(true);
+
+
+while(true){ //endlosschleife! Hier findet das eigentliche Spielen statt
+    naechsterSpieler();
+    do{
+    	if(aktiverSpieler->istComputerGegner)
+    	{
+    		spielzugKI();
+    	}else{
+    		spielzugMenschlicherSpieler();
+    	}
+ }while (aktiverSpieler->zugBeendet == false);//(chauswahl != 1)||(chauswahl != 2));
+}
+
+}
+
+
+void spielSpeichern(){
+	FILE * datei = fopen(speicherDateiNamen,"w+");
+	if (datei == NULL)
+	{
+	printf("Fehler beim oeffnen der Datei.");
+	beenden();
+	}
+	//SpielfeldSpeichern:
+	for(int xi = 0; xi<iBreite;xi++)for(int yi = 0; yi<iHoehe;yi++)
+	{
+		fwrite(&Spielfeld[xi][yi], sizeof(S_Feld),1,datei);
+	}
+
+	//fprintf(datei, "");
+
+	fclose(datei);
+}
+
+void neuerSpieler(bool bComputerGegner)
+{
 	Spieler ** newMitSpieler = new Spieler*[anzahlSpieler+1];
 	for(int i=0; i< anzahlSpieler;i++)newMitSpieler[i]=mitSpieler[i];//mitSpieler kopieren
 	if(mitSpieler != 0){
@@ -105,7 +160,7 @@ void neuerSpieler(bool computerGegner){
 	}
 	// Spieler anfügen ....
 	newMitSpieler[anzahlSpieler]=new Spieler;
-	newMitSpieler[anzahlSpieler]->istComputerGegner = computerGegner;
+	newMitSpieler[anzahlSpieler]->istComputerGegner = bComputerGegner;
 	fuelleSpielsteinBeutel(newMitSpieler[anzahlSpieler]->spielsteinBeutel);
 	newMitSpieler[anzahlSpieler]->spielerNummer = anzahlSpieler;
 	newMitSpieler[anzahlSpieler]->punktestand = 0;
@@ -125,35 +180,6 @@ void naechsterSpieler() // setzt den naechsten Spieler als aktiven Spieler
 	aktiverSpieler->darfSteineTauschen = true;
 }
 
-int main(int argc, char *argv[])
-{
-//Initialisierung:===============
-//alle felder = 0 setzen
-      for (int yi=0; yi<iHoehe; yi++)
-      {
-             for (int xi=0; xi<iBreite; xi++)
-             {
-                 Spielfeld[xi][yi].Besetzt = false;
-             }
-      }
-      initialisiereSpielsteine();
-//==============================
-      neuerSpieler(false); // einen Spieler erstellen
-
-while(true){ //endlosschleife! Hier findet das eigentliche Spielen statt
-    naechsterSpieler();
-    do{
-    	if(aktiverSpieler->istComputerGegner)
-    	{
-    		spielzugKI();
-    	}else{
-    		spielzugMenschlicherSpieler();
-    	}
- }while (aktiverSpieler->zugBeendet);//(chauswahl != 1)||(chauswahl != 2));
-}
-
-}
-
 void beenden()
 {
 	exit(0);
@@ -161,7 +187,22 @@ void beenden()
 
 void spielzugKI()
 {
-
+	ZeigeSpielfeld();
+	//return;
+	for(int i = 0; i<anzahlSpielsteine;i++)for(int xi = 0; xi<iBreite;xi++)for(int yi = 0; yi<iHoehe;yi++)
+		{
+			if(spielsteine[i]!=0)
+			{
+				if(darfsetzen(xi,yi,spielsteine[i])==true)
+				{
+					ZeigeSpielfeld();
+					printf("\n\n");
+getchar();
+					setzeSpielstein(spielsteine, i,xi,yi);
+					aktiverSpieler->zugBeendet=true;
+				}
+			}
+		}
 }
 
 void spielzugMenschlicherSpieler()
@@ -194,6 +235,7 @@ void spielzugMenschlicherSpieler()
          beenden();
     }
     else if(chauswahl == '4'){
+    	aktiverSpieler->punktestand += punkteRechnen(aktiverSpieler->zuletztGesetzterSpielsteinPos[0],aktiverSpieler->zuletztGesetzterSpielsteinPos[1]);
     	aktiverSpieler->zugBeendet = true;
     }
     else
@@ -248,9 +290,9 @@ void fuelleSpielsteinBeutel(Spielstein * beutel[spielsteinBeutelGroesse])
 void ZeigeSpielfeld()
 {
       //system("cls");
-     printf("%d\n",x);
-     printf("%d\n",y);
-     printf("%d\n",Punkte);
+     //printf("%d\n",x);
+    // printf("%d\n",y);
+    //printf("%d\n",Punkte);
      //printf(cansetr1<<endl;
      //printf(cansetr2<<endl;
 
@@ -334,7 +376,6 @@ void Feldauswahl()
     	 //hier noch eine Abrfrage, welche abfrägt, dass Spielsteine nur in Reihen gelegt werden dürfen.
     	 if(darfsetzen(x,y,aktiverSpieler->spielsteinBeutel[gewahlterSpielstein])){
     	 setzeSpielstein(aktiverSpieler->spielsteinBeutel, gewahlterSpielstein,x,y);
-    	 aktiverSpieler->punktestand += punkteRechnen(x,y);
     	 	//break;
     	 }else{
     		 printf("Nicht möglich!");
@@ -345,7 +386,7 @@ void Feldauswahl()
 }while(cBewegung != 115 || cBewegung != 27); //27 == ESC
 }
 
-void setzeSpielstein(Spielstein * ausBeutel[spielsteinBeutelGroesse], int spielsteinNr, int x, int y)
+void setzeSpielstein(Spielstein * ausBeutel[], int spielsteinNr, int x, int y)
 {
 	Spielfeld[x][y].spielstein = ausBeutel[spielsteinNr];
 	Spielfeld[x][y].Besetzt = true;
@@ -379,14 +420,17 @@ void zeigeSpielsteine(Spielstein * beutel[spielsteinBeutelGroesse])
 
 void spielsteinAnzeigen(Spielstein * st)
 {
+	if(st!=0){
 	//Farbe(Spielfeld[xi][yi].spielstein.farbe,0);
 	printf(" ");
 	printf("%d %c",st->farbe,st->form);
 	printf(" ");
 	//Farbe(15,0);
+	}
 }
 
 bool checkReihe(Spielstein * Reihe[iBreite]){
+
 	for(int i=0;i<iBreite-1;i++)
      {
 		if(Reihe[i+1]!=0){//Vergleich nur möglich, wenn Spielstein an nächste Position
@@ -415,7 +459,7 @@ bool darfsetzen(int x, int y, Spielstein * st)
      for(int xi; xi<iBreite;xi++)for(int yi;yi<iHoehe;yi++){
     	 if(Spielfeld[xi][yi].Besetzt)anzahlGesetzterSteine++;
      }
-     if(Spielfeld[x+1][y].Besetzt == false && Spielfeld[x-1][y].Besetzt == false && Spielfeld[x][y+1].Besetzt == false && Spielfeld[x][y-1].Besetzt == false && anzahlGesetzterSteine>0)return false;
+     if((x>iBreite-1 || Spielfeld[x+1][y].Besetzt == false) && (x<1 || Spielfeld[x-1][y].Besetzt == false) && (y>iHoehe-1 || Spielfeld[x][y+1].Besetzt == false) && (y<1 || Spielfeld[x][y-1].Besetzt == false) && anzahlGesetzterSteine>0)return false;
      
      bool gueltig=true;
 
@@ -429,28 +473,52 @@ bool darfsetzen(int x, int y, Spielstein * st)
                           }
                   int iReihe=0;
 
-     for(bool diagonal = true; diagonal;diagonal=false)
-     for(int yi=0;yi<iHoehe;yi++){
-     for(int xi=0;xi<iBreite;xi++)
-     {
-    	 if(diagonal==false){
-    		 int xitemp=xi;
-    		 xi=yi;
-    		 yi=xitemp;
-    	 }
-             if(Spielfeld[xi][yi].Besetzt==true)
-             {
-             Reihe[iReihe] = Spielfeld[xi][yi].spielstein;
-             iReihe++;
-             }else{
-             if(checkReihe(Reihe)==false)gueltig = false;
-             for(int i=0;i<iBreite;i++){
-                     Reihe[i]=0;
-                     }
-             iReihe=0;
-             }
-             }
-     }
+                  for(int yi=0;yi<iHoehe;yi++){
+                	  for(int i=0;i<iBreite;i++){
+                	                                    Reihe[i]=0;
+                	                                    }
+                	                            iReihe=0;
+
+                  for(int xi=0;xi<iBreite;xi++)
+                  {
+                          if(Spielfeld[xi][yi].Besetzt==true)
+                          {
+                          Reihe[iReihe] = Spielfeld[xi][yi].spielstein;
+                          iReihe++;
+
+                          }else{
+                          if(checkReihe(Reihe)==false)gueltig = false;
+                          for(int i=0;i<iBreite;i++){
+                                  Reihe[i]=0;
+                                  }
+                          iReihe=0;
+                          }
+                          }
+                  }
+
+                  for(int xi=0;xi<iHoehe;xi++){
+                	  for(int i=0;i<iBreite;i++){
+                	                                    Reihe[i]=0;
+                	                                    }
+                	                            iReihe=0;
+
+                  for(int yi=0;yi<iBreite;yi++)
+                  {
+                          if(Spielfeld[xi][yi].Besetzt==true)
+                          {
+                          Reihe[iReihe] = Spielfeld[xi][yi].spielstein;
+                          iReihe++;
+
+                          }else{
+                          if(checkReihe(Reihe)==false)gueltig = false;
+                          for(int i=0;i<iBreite;i++){
+                                  Reihe[i]=0;
+                                  }
+                          iReihe=0;
+                          }
+                          }
+                  }
+
      //Spielstein wieder entfernen:
 	  Spielfeld[x][y].Besetzt = false;
 	  Spielfeld[x][y].spielstein = 0;
@@ -486,7 +554,7 @@ int punkteRechnen(int x, int y)
 				if(Spielfeld[x][yi].Besetzt)punkteReihe++;
 			}while(Spielfeld[x][yi].Besetzt); //Ein unbesetzter Spielfeldplatz unterbricht die Reihe!
 		}
-	if(punkteReihe==6)punkteReihe=12; //Qwirkle!
+	if(punkteReihe==anzahlFarben)punkteReihe*=2; //Qwirkle!
 	endpunktzahl +=punkteReihe;
 
 	return endpunktzahl;
