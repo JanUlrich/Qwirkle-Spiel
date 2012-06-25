@@ -114,8 +114,8 @@ void spielStarten()
       }
       initialisiereSpielsteine();
 //==============================
-      neuerSpieler(false); // einen Spieler erstellen
-      neuerSpieler(true);
+      neuerSpieler(true); // einen Spieler erstellen
+      neuerSpieler(false);
 
 
 while(true){ //endlosschleife! Hier findet das eigentliche Spielen statt
@@ -351,6 +351,7 @@ void naechsterSpieler() // setzt den naechsten Spieler als aktiven Spieler
 	}
 	aktiverSpieler->zugBeendet = false;
 	aktiverSpieler->darfSteineTauschen = true;
+	printf("Spieler %d ist an der Reihe!\n\n",aktiverSpieler->spielerNummer);
 }
 
 void beenden()
@@ -368,14 +369,15 @@ void spielzugKI()
 			{
 				if(darfsetzen(xi,yi,spielsteine[i])==true)
 				{
-					ZeigeSpielfeld();
-					printf("\n\n");
-gibZeichen();
+					//ZeigeSpielfeld();
+					//printf("\n\n");
+//gibZeichen();
 					setzeSpielstein(spielsteine, i,xi,yi);
-					aktiverSpieler->zugBeendet=true;
+					break;
 				}
 			}
 		}
+	aktiverSpieler->zugBeendet=true;
 }
 
 void spielzugMenschlicherSpieler()
@@ -408,7 +410,7 @@ void spielzugMenschlicherSpieler()
          beenden();
     }
     else if(chauswahl == '4'){
-    	aktiverSpieler->punktestand += punkteRechnen(aktiverSpieler->zuletztGesetzterSpielsteinPos[0],aktiverSpieler->zuletztGesetzterSpielsteinPos[1]);
+    	//aktiverSpieler->punktestand += punkteRechnen(aktiverSpieler->zuletztGesetzterSpielsteinPos[0],aktiverSpieler->zuletztGesetzterSpielsteinPos[1]);
     	aktiverSpieler->zugBeendet = true;
     }
     else
@@ -556,7 +558,7 @@ void Feldauswahl()
            }
      printf("Punktestand Spieler %d: %d\n",aktiverSpieler->spielerNummer , aktiverSpieler->punktestand);
      ZeigeSpielfeld();
-}while(cBewegung != 115 || cBewegung != 27); //27 == ESC
+}while(cBewegung != 115 && cBewegung != 27); //27 == ESC
 }
 
 void setzeSpielstein(Spielstein * ausBeutel[], int spielsteinNr, int x, int y)
@@ -596,7 +598,7 @@ void spielsteinAnzeigen(Spielstein * st)
 	if(st!=0){
 	Farbe(st->farbe,0);
 	printf(" ");
-	printf("%c",st->form);
+	printf("%d%c",st->farbe,st->form);
 	printf(" ");
 	Farbe(15,0);
 	}
@@ -620,8 +622,16 @@ if(Reihe[1]!=0){//Vergleich nur möglich, wenn Spielstein an nächste Position
 
 		for(int i=0;i<iBreite;i++)
      {
-		if(Reihe[i]!=0 && gleicheFarbe && lFarbe != Reihe[i]->farbe)return false;
-		if(Reihe[i]!=0 && gleicheForm && lForm != Reihe[i]->form)return false;
+		if(Reihe[i]!=0 && gleicheFarbe && lFarbe != Reihe[i]->farbe){return false;}else if(gleicheFarbe){
+			for(int i2 = 0; i2<iBreite; i2++){
+				if(i2!=i && Reihe[i2]!=0 && Reihe[i]!=0 && Reihe[i]->form == Reihe[i2]->form)return false;
+			}
+		}
+		if(Reihe[i]!=0 && gleicheForm && lForm != Reihe[i]->form){return false;}else if(gleicheForm){
+			for(int i2 = 0; i2<iBreite; i2++){
+				if(i2!=i && Reihe[i2]!=0 && Reihe[i]!=0 && Reihe[i]->farbe == Reihe[i2]->farbe)return false;
+			}
+		}
 
      }
 }
@@ -641,10 +651,10 @@ bool darfsetzen(int x, int y, Spielstein * st)
 {
      if(Spielfeld[x][y].Besetzt == true)return false;
      int anzahlGesetzterSteine=0;
-     for(int xi; xi<iBreite;xi++)for(int yi;yi<iHoehe;yi++){
+     for(int xi=0; xi<iBreite;xi++)for(int yi=0;yi<iHoehe;yi++){
     	 if(Spielfeld[xi][yi].Besetzt)anzahlGesetzterSteine++;
      }
-     if((x>iBreite-1 || Spielfeld[x+1][y].Besetzt == false) && (x<1 || Spielfeld[x-1][y].Besetzt == false) && (y>iHoehe-1 || Spielfeld[x][y+1].Besetzt == false) && (y<1 || Spielfeld[x][y-1].Besetzt == false) && anzahlGesetzterSteine>0)return false;
+     if((x>iBreite-2 || Spielfeld[x+1][y].Besetzt == false) && (x<1 || Spielfeld[x-1][y].Besetzt == false) && (y>iHoehe-2 || Spielfeld[x][y+1].Besetzt == false) && (y<1 || Spielfeld[x][y-1].Besetzt == false) && anzahlGesetzterSteine>0)return false;
      
      bool gueltig=true;
 
