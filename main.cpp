@@ -1,8 +1,8 @@
 #include <cstdlib>
 #include <iostream>
-//#include <conio.h>
+#include <conio.h>
 #include <stdio.h>
-//#include <windows.h>
+#include <windows.h>
 #include <time.h>
 #include "Farbe.h"
 
@@ -47,9 +47,9 @@ struct S_Feld
        bool Besetzt;
        bool Ausgeweahlt;
        bool punkterechnung;
-       
+
        Spielstein * spielstein;
-       
+
 };
 
 struct Spieler
@@ -101,7 +101,7 @@ int punkteRechnen(int x, int y);
 void neuerSpieler(bool bComputerGegner);
 void naechsterSpieler();
 
-int main(int argc, char *argv[])
+void spielStarten()
 {
 //Initialisierung:===============
 //alle felder = 0 setzen
@@ -114,7 +114,7 @@ int main(int argc, char *argv[])
       }
       initialisiereSpielsteine();
 //==============================
-      neuerSpieler(true); // einen Spieler erstellen
+      neuerSpieler(false); // einen Spieler erstellen
       neuerSpieler(true);
 
 
@@ -130,6 +130,177 @@ while(true){ //endlosschleife! Hier findet das eigentliche Spielen statt
  }while (aktiverSpieler->zugBeendet == false);//(chauswahl != 1)||(chauswahl != 2));
 }
 
+}
+
+int main(int argc, char *argv[])
+{
+    // Variablen deklarieren
+    char ceingabe;
+    int istatus;
+    int iflag;
+    int iausgang;
+
+
+   istatus=1;
+   iflag=0;
+   iausgang=0;
+
+   do
+   {
+      do
+      {
+         //Ausgabe des Menüs
+         switch(istatus)
+         {
+              case 1 :
+                   printf(" \n \n \n ");
+                   printf("            QQQQQ    Q     Q  Q  QQQQQQ  QQQQQQQ  QQQQQQQ  Q       \n ");
+                   printf("           Q     Q   Q     Q  Q  Q    Q  Q     Q  Q        Q       \n ");
+                   printf("           Q     Q   Q     Q  Q  Q    Q  Q     Q  Q        Q       \n ");
+                   printf("           Q     Q   Q     Q  Q  QQQQQ   Q        QQQQQQQ  Q       \n ");
+                   printf("           Q     Q   Q     Q  Q  Q  Q    Q   QQQ  Q        Q       \n ");
+                   printf("           Q    QQ   Q     Q  Q  Q   Q   Q     Q  Q        Q       \n ");
+                   printf("            QQQQQQQ   QQQQQ   Q  Q    Q  QQQQQQQ  QQQQQQQ  QQQQQQQ \n ");
+                   printf("\n\n\n\n\n");
+                   printf("                           \32\32\32 *Spiel starten* \33\33\33");
+                   printf("\n\n\n\n");
+                   printf("                                *Spiel laden*");
+                   printf("\n\n\n\n");
+                   printf("                                 *Anleitung*");
+                   printf("\n\n\n\n");
+                   printf("                              *Spiel verlassen*");
+                   break;
+
+                   case 2 :
+                   printf(" \n \n \n ");
+                   printf("            QQQQQ    Q     Q  Q  QQQQQQ  QQQQQQQ  QQQQQQQ  Q       \n ");
+                   printf("           Q     Q   Q     Q  Q  Q    Q  Q     Q  Q        Q       \n ");
+                   printf("           Q     Q   Q     Q  Q  Q    Q  Q     Q  Q        Q       \n ");
+                   printf("           Q     Q   Q     Q  Q  QQQQQ   Q        QQQQQQQ  Q       \n ");
+                   printf("           Q     Q   Q     Q  Q  Q  Q    Q   QQQ  Q        Q       \n ");
+                   printf("           Q    QQ   Q     Q  Q  Q   Q   Q     Q  Q        Q       \n ");
+                   printf("            QQQQQQQ   QQQQQ   Q  Q    Q  QQQQQQQ  QQQQQQQ  QQQQQQQ \n ");
+                   printf("\n\n\n\n\n");
+                   printf("                               *Spiel starten*");
+                   printf("\n\n\n\n");
+                   printf("                            \32\32\32 *Spiel laden* \33\33\33");
+                   printf("\n\n\n\n");
+                   printf("                                 *Anleitung*");
+                   printf("\n\n\n\n");
+                   printf("                              *Spiel verlassen*");
+                   break;
+
+                   case 3 :
+                   printf(" \n \n \n ");
+                   printf("            QQQQQ    Q     Q  Q  QQQQQQ  QQQQQQQ  QQQQQQQ  Q       \n ");
+                   printf("           Q     Q   Q     Q  Q  Q    Q  Q     Q  Q        Q       \n ");
+                   printf("           Q     Q   Q     Q  Q  Q    Q  Q     Q  Q        Q       \n ");
+                   printf("           Q     Q   Q     Q  Q  QQQQQ   Q        QQQQQQQ  Q       \n ");
+                   printf("           Q     Q   Q     Q  Q  Q  Q    Q   QQQ  Q        Q       \n ");
+                   printf("           Q    QQ   Q     Q  Q  Q   Q   Q     Q  Q        Q       \n ");
+                   printf("            QQQQQQQ   QQQQQ   Q  Q    Q  QQQQQQQ  QQQQQQQ  QQQQQQQ \n ");
+                   printf("\n\n\n\n\n");
+                   printf("                               *Spiel starten* ");
+                   printf("\n\n\n\n");
+                   printf("                                *Spiel laden*");
+                   printf("\n\n\n\n");
+                   printf("                             \32\32\32 *Anleitung* \33\33\33");
+                   printf("\n\n\n\n");
+                   printf("                              *Spiel verlassen*");
+                   break;
+
+                   case 4 :
+                   printf(" \n \n \n ");
+                   printf("            QQQQQ    Q     Q  Q  QQQQQQ  QQQQQQQ  QQQQQQQ  Q       \n ");
+                   printf("           Q     Q   Q     Q  Q  Q    Q  Q     Q  Q        Q       \n ");
+                   printf("           Q     Q   Q     Q  Q  Q    Q  Q     Q  Q        Q       \n ");
+                   printf("           Q     Q   Q     Q  Q  QQQQQ   Q        QQQQQQQ  Q       \n ");
+                   printf("           Q     Q   Q     Q  Q  Q  Q    Q   QQQ  Q        Q       \n ");
+                   printf("           Q    QQ   Q     Q  Q  Q   Q   Q     Q  Q        Q       \n ");
+                   printf("            QQQQQQQ   QQQQQ   Q  Q    Q  QQQQQQQ  QQQQQQQ  QQQQQQQ \n ");
+                   printf("\n\n\n\n\n");
+                   printf("                               *Spiel starten* ");
+                   printf("\n\n\n\n");
+                   printf("                                *Spiel laden*");
+                   printf("\n\n\n\n");
+                   printf("                                 *Anleitung*");
+                   printf("\n\n\n\n");
+                   printf("                          \32\32\32 *Spiel verlassen* \33\33\33");
+                   break;
+         }
+
+         // Einlesen und Auswerten der Eingabe
+         do
+         {
+               ceingabe=getch();
+         }while(ceingabe<0);
+
+         switch(ceingabe)
+         {
+              case 72:
+                    istatus=istatus-1;
+
+                    if(istatus==0)
+                    {
+                           istatus=4;
+                    }
+                    break;
+
+              case 80:
+                    istatus=istatus+1;
+
+                    if(istatus==5)
+                    {
+                           istatus=1;
+                    }
+                    break;
+
+              case 13:
+                   iflag=1;
+                   break;
+
+         }
+         system("cls");
+   }while(iflag==0);
+
+   // Spielanleitung
+   switch(istatus)
+   {
+   	   	   	   	   case 1:
+   	   	   	   		   spielStarten();
+                  case 3:
+                       printf("Jeder Spieler bekommt fuenf Steine, die er aus einem Beutel zieht.\n");
+                       printf("Der Spieler beginnt und legt eine Kette aus vielen moeglichst vielen\n");
+                       printf("gleichen Symbolen oder Steinen in der selben Farbe und beendet den Zug.\n");
+                       printf("Alle folgenden Spielzuege folgen diesem Prinzip. Man legt eine Reihe aus \n");
+                       printf("oder verlaengert eine Reihe, bekommt Punkte für Steine in den Reihen. \n");
+                       printf("Im Gegensatz zur allerersten Reihe koennen bei den folgenden Spielzuegen\n");
+                       printf("mehrere Reihen auf einmal entstehen. Dann wird jede Reihe fuer sich\n");
+                       printf("gewertet, wobei auch hier jede Reihe so viele Punkte bringt, wie sie\n");
+                       printf("Steine enthaelt. \n");
+                       printf("Waehrend des ganzen Spiels gilt fuer die Punktwertung aber eine \n");
+                       printf("Sonderregel: Eine Reihe mit fuenf Steinen, ein sogenannter Qwirkle,\n");
+                       printf("bringt nicht fuenf, sondern zehn Punkte. Wer keine Steine auslegen \n");
+                       printf("moechte, darf alternativ auch Steine tauschen. Dazu legt er die \n");
+                       printf("abzugebenden Steine beiseite, zieht entsprechend viele neue aus \n");
+                       printf("dem Beutel und wirft die unerwuenschten Steine anschließend in den \n");
+                       printf("Beutel hinein.\n");
+                       printf("Sobald der Beutel leer ist, koennen keine Steine mehr nachgezogen \n");
+                       printf("werden. Nun wird solange gespielt, bis ein Spieler seinen letzten \n");
+                       printf("Stein gelegt hat. Er beendet das Spiel. Wer nun die meisten Punkte hat,\n");
+                       printf("ist Sieger.\n\n\n");
+                       printf("Zurueck mit beliebiger Taste");
+                       getch();
+                       break;
+
+                  case 4:
+                       system("exit");
+                       iausgang=1;
+                       break;
+   }
+   }while(iausgang==0);
+
+   spielStarten();
 }
 
 
@@ -197,7 +368,7 @@ void spielzugKI()
 				{
 					ZeigeSpielfeld();
 					printf("\n\n");
-getchar();
+gibZeichen();
 					setzeSpielstein(spielsteine, i,xi,yi);
 					aktiverSpieler->zugBeendet=true;
 				}
@@ -430,24 +601,36 @@ void spielsteinAnzeigen(Spielstein * st)
 }
 
 bool checkReihe(Spielstein * Reihe[iBreite]){
-
-	for(int i=0;i<iBreite-1;i++)
-     {
-		if(Reihe[i+1]!=0){//Vergleich nur möglich, wenn Spielstein an nächste Position
-		bool gleicheFarbe=Reihe[i]->farbe == Reihe[i+1]->farbe;
-		bool gleicheForm=Reihe[i]->form == Reihe[i+1]->form;
+int lFarbe=0;
+char lForm = (char)0;
+bool gleicheFarbe=false;
+bool gleicheForm=false;
+if(Reihe[1]!=0){//Vergleich nur möglich, wenn Spielstein an nächste Position
+		gleicheFarbe=Reihe[0]->farbe == Reihe[1]->farbe;
+		gleicheForm=Reihe[0]->form == Reihe[1]->form;
+		if(gleicheFarbe && gleicheForm)return false;
 		if(!gleicheFarbe && !gleicheForm)return false;
+		if(gleicheFarbe){
+			lFarbe = Reihe[0]->farbe;
+		}else{
+			lForm = Reihe[0]->form;
 		}
 
+		for(int i=0;i<iBreite;i++)
+     {
+		if(gleicheFarbe && lFarbe != Reihe[i]->farbe)return false;
+		if(gleicheForm && lForm != Reihe[i]->form)return false;
+
      }
+}
 	return true;
      }       
 
 char gibZeichen()
 {
-	char c = getchar();
+	char c = getch();
 	//printf("%d",c); //Für Debug-Zwecke
-	getchar();
+	//getchar();
 	return c;
 }
 
@@ -474,6 +657,7 @@ bool darfsetzen(int x, int y, Spielstein * st)
                   int iReihe=0;
 
                   for(int yi=0;yi<iHoehe;yi++){
+
                 	  for(int i=0;i<iBreite;i++){
                 	                                    Reihe[i]=0;
                 	                                    }
