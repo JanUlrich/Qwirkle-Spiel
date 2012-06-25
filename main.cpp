@@ -332,9 +332,11 @@ void neuerSpieler(bool bComputerGegner)
 	// Spieler anfügen ....
 	newMitSpieler[anzahlSpieler]=new Spieler;
 	newMitSpieler[anzahlSpieler]->istComputerGegner = bComputerGegner;
+	for(int i=0;i<spielsteinBeutelGroesse;i++)newMitSpieler[anzahlSpieler]->spielsteinBeutel[i]=0;
 	fuelleSpielsteinBeutel(newMitSpieler[anzahlSpieler]->spielsteinBeutel);
 	newMitSpieler[anzahlSpieler]->spielerNummer = anzahlSpieler;
 	newMitSpieler[anzahlSpieler]->punktestand = 0;
+
 	// ....................
 	mitSpieler = newMitSpieler;
 	anzahlSpieler++;
@@ -592,11 +594,11 @@ void zeigeSpielsteine(Spielstein * beutel[spielsteinBeutelGroesse])
 void spielsteinAnzeigen(Spielstein * st)
 {
 	if(st!=0){
-	//Farbe(Spielfeld[xi][yi].spielstein.farbe,0);
+	Farbe(st->farbe,0);
 	printf(" ");
-	printf("%d %c",st->farbe,st->form);
+	printf("%c",st->form);
 	printf(" ");
-	//Farbe(15,0);
+	Farbe(15,0);
 	}
 }
 
