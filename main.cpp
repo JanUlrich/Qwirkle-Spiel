@@ -373,6 +373,8 @@ void spielzugKI()
 					//printf("\n\n");
 //gibZeichen();
 					setzeSpielstein(spielsteine, i,xi,yi);
+					i=anzahlSpielsteine;
+					xi=iBreite;
 					break;
 				}
 			}
