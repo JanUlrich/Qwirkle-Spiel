@@ -10,9 +10,11 @@
 //Vincent Musch
 //Spielfeld Qwikle (1)
 //15.02.2012
-#define FarbeBlau    1
-#define FarbeRot     2
-
+#define Farbe1     9
+#define Farbe2     10
+#define Farbe3     11
+#define Farbe4     12
+#define Farbe5	   13
 
 
 using namespace std;
@@ -31,8 +33,8 @@ const int iBreite = 15;
 const int iHoehe = 15;
 const int spielsteinBeutelGroesse = 6;
 const int anzahlSpielsteine = 75;
-const int anzahlFarben=2;
-const int anzahlFormen=4;
+const int anzahlFarben=5;
+const int anzahlFormen=5;
 const char* speicherDateiNamen = "QwirkleSpeicherstand.dat";
 
 struct Spielstein
@@ -388,7 +390,6 @@ void spielzugKI()
 
 void spielzugMenschlicherSpieler()
 {
-    printf("Punktestand Spieler %d: %d\n\n",aktiverSpieler->spielerNummer , aktiverSpieler->punktestand);
 	ZeigeSpielfeld();
     //Lokale Variable
 	char chauswahl;
@@ -432,7 +433,7 @@ void spielzugMenschlicherSpieler()
 void initialisiereSpielsteine()
 {
  char form = 'A';
-	int farben[anzahlFarben]={FarbeRot, FarbeBlau};
+	int farben[anzahlFarben]={Farbe1, Farbe2, Farbe3, Farbe4, Farbe5};
 	int formNr=0;
 	int farbenNr=0;
 	for(int i=0;i<anzahlSpielsteine;i++)
@@ -474,12 +475,9 @@ void fuelleSpielsteinBeutel(Spielstein * beutel[spielsteinBeutelGroesse])
 
 void ZeigeSpielfeld()
 {
-      //system("cls");
-     //printf("%d\n",x);
-    // printf("%d\n",y);
-    //printf("%d\n",Punkte);
-     //printf(cansetr1<<endl;
-     //printf(cansetr2<<endl;
+      system("cls");
+
+	printf("Punktestand Spieler %d: %d\n\n",aktiverSpieler->spielerNummer , aktiverSpieler->punktestand);
 
      for (int yi=0; yi<iHoehe; yi++)
          {
@@ -610,7 +608,7 @@ void spielsteinAnzeigen(Spielstein * st)
 	if(st!=0){
 	Farbe(st->farbe,0);
 	printf(" ");
-	printf("%d%c",st->farbe,st->form);
+	printf("%c",st->form);
 	printf(" ");
 	Farbe(15,0);
 	}
