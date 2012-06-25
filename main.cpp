@@ -620,8 +620,8 @@ if(Reihe[1]!=0){//Vergleich nur möglich, wenn Spielstein an nächste Position
 
 		for(int i=0;i<iBreite;i++)
      {
-		if(gleicheFarbe && lFarbe != Reihe[i]->farbe)return false;
-		if(gleicheForm && lForm != Reihe[i]->form)return false;
+		if(Reihe[i]!=0 && gleicheFarbe && lFarbe != Reihe[i]->farbe)return false;
+		if(Reihe[i]!=0 && gleicheForm && lForm != Reihe[i]->form)return false;
 
      }
 }
