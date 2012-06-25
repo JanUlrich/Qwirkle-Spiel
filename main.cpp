@@ -735,11 +735,23 @@ bool darfsetzen(int x, int y, Spielstein * st)
 
 }
 
+bool contains(Spielstein * stArray[anzahlSpielsteine], Spielstein * st) //Hilfsfunktion für punkteRechnen
+{
+	for(int i=0;i<anzahlSpielsteine;i++)if(stArray!=0 && stArray[i]==st)return true;
+return false;
+}
+
 //Rechnet die Punkte aus, welcher ein neu gelegter Spielstein an Position x,y einbringt.
 int punkteRechnen(Spielstein * reihe[])
 {
-	int endpunktzahl = 1; //Ein Punkt für den Ausgangsspielstein
+	Spielstein * gewerteteSteine[anzahlSpielsteine];
+	int gewerteteSteineIterator = 0;
+	for(int i=0;i<anzahlSpielsteine;i++)gewerteteSteine[i]=0;
+	int endpunktzahl = 0;
+	endpunktzahl++; //EInen Punkt für jeden Gesetzten Spielstein
 	for(int i=0;reihe[i]!=0;i++){
+		int x = reihe[i]->xPos;
+		int y = reihe[i]->yPos;
 	if(!Spielfeld[x][y].Besetzt)return 0; // Ist das Spielfeld nicht besetzt, gibt es auch keine Punkte!
 
 	int punkteReihe = 0;
@@ -748,7 +760,12 @@ int punkteRechnen(Spielstein * reihe[])
 		do{
 			xi+=off;
 			if(xi<0 || xi>iBreite)break;
-			if(Spielfeld[xi][y].Besetzt)punkteReihe++;
+			if(Spielfeld[xi][y].Besetzt && !contains(gewerteteSteine, Spielfeld[xi][y].spielstein))
+			{
+				punkteReihe++;
+				gewerteteSteine[gewerteteSteineIterator] = Spielfeld[xi][y].spielstein;
+				gewerteteSteineIterator++;
+			}
 		}while(Spielfeld[xi][y].Besetzt); //Ein unbesetzter Spielfeldplatz unterbricht die Reihe!
 	}
 	if(punkteReihe==6)punkteReihe=12; //Qwirkle!
@@ -760,7 +777,12 @@ int punkteRechnen(Spielstein * reihe[])
 			do{
 				yi+=off;
 				if(yi<0 || yi>iHoehe)break;
-				if(Spielfeld[x][yi].Besetzt)punkteReihe++;
+				if(Spielfeld[x][yi].Besetzt && !contains(gewerteteSteine, Spielfeld[x][yi].spielstein))
+				{
+					punkteReihe++;
+					gewerteteSteine[gewerteteSteineIterator] = Spielfeld[x][yi].spielstein;
+					gewerteteSteineIterator++;
+				}
 			}while(Spielfeld[x][yi].Besetzt); //Ein unbesetzter Spielfeldplatz unterbricht die Reihe!
 		}
 	if(punkteReihe==anzahlFarben)punkteReihe*=2; //Qwirkle!
@@ -770,6 +792,8 @@ int punkteRechnen(Spielstein * reihe[])
 	}
 	return endpunktzahl;
 }
+
+
 
 void spielsteinSetzenDurchKI(){
 
