@@ -39,6 +39,8 @@ struct Spielstein
 {
        int farbe;
        char form;
+       int xPos;
+       int yPos;
 };
 
 //Variablen mit "Eigenschaften"
@@ -61,7 +63,7 @@ struct Spieler
 	bool zugBeendet;
 	bool darfSteineTauschen;
 	int punktestand;
-	int zuletztGesetzterSpielsteinPos[2]; // [0] = X-Wert, [1] = Y-Wert
+	Spielstein * setzendeReihe[iBreite]; // [0] = X-Wert, [1] = Y-Wert
 	};
 
 //Arrar
@@ -97,7 +99,7 @@ bool darfsetzen(int x, int y, Spielstein * st);
 void beenden();
 void spielzugKI();
 void spielzugMenschlicherSpieler();
-int punkteRechnen(int x, int y);
+int punkteRechnen(Spielstein* reihe[]);
 void neuerSpieler(bool bComputerGegner);
 void naechsterSpieler();
 
@@ -128,6 +130,7 @@ while(true){ //endlosschleife! Hier findet das eigentliche Spielen statt
     		spielzugMenschlicherSpieler();
     	}
  }while (aktiverSpieler->zugBeendet == false);//(chauswahl != 1)||(chauswahl != 2));
+    aktiverSpieler->punktestand += punkteRechnen(aktiverSpieler->setzendeReihe); //Punkte berechnen!
 }
 
 }
@@ -349,6 +352,7 @@ void naechsterSpieler() // setzt den naechsten Spieler als aktiven Spieler
 	}else{
 		aktiverSpieler = mitSpieler[0];
 	}
+	for(int i = 0 ;i<iBreite;i++)aktiverSpieler->setzendeReihe[i]=0;
 	aktiverSpieler->zugBeendet = false;
 	aktiverSpieler->darfSteineTauschen = true;
 	printf("Spieler %d ist an der Reihe!\n\n",aktiverSpieler->spielerNummer);
@@ -384,7 +388,9 @@ void spielzugKI()
 
 void spielzugMenschlicherSpieler()
 {
-	//Lokale Variable
+    printf("Punktestand Spieler %d: %d\n\n",aktiverSpieler->spielerNummer , aktiverSpieler->punktestand);
+	ZeigeSpielfeld();
+    //Lokale Variable
 	char chauswahl;
 
     printf("Feld Anzeigen(1)\n");
@@ -412,8 +418,10 @@ void spielzugMenschlicherSpieler()
          beenden();
     }
     else if(chauswahl == '4'){
-    	//aktiverSpieler->punktestand += punkteRechnen(aktiverSpieler->zuletztGesetzterSpielsteinPos[0],aktiverSpieler->zuletztGesetzterSpielsteinPos[1]);
-    	aktiverSpieler->zugBeendet = true;
+        	aktiverSpieler->zugBeendet = true;
+        }
+    else if(chauswahl == '5'){
+       beenden();
     }
     else
     {
@@ -500,10 +508,6 @@ void ZeigeSpielfeld()
          }
 }
 
-void zugBeenden(){
-
-}
-
 void Feldauswahl()
 {
      
@@ -552,13 +556,16 @@ void Feldauswahl()
     	 int gewahlterSpielstein = spielsteinAuswaehlen(aktiverSpieler->spielsteinBeutel);
     	 //hier noch eine Abrfrage, welche abfrägt, dass Spielsteine nur in Reihen gelegt werden dürfen.
     	 if(darfsetzen(x,y,aktiverSpieler->spielsteinBeutel[gewahlterSpielstein])){
-    	 setzeSpielstein(aktiverSpieler->spielsteinBeutel, gewahlterSpielstein,x,y);
+    		 int iReihe=0;
+    		 while(iReihe<iBreite && aktiverSpieler->setzendeReihe[iReihe]!=0){iReihe++;};
+    		 if (iReihe >= iBreite)return; //Spieler kann nicht mehr als iBreite Steine setzen
+    		 setzeSpielstein(aktiverSpieler->spielsteinBeutel, gewahlterSpielstein,x,y);
+    		 aktiverSpieler->setzendeReihe[iReihe]=Spielfeld[x][y].spielstein;
     	 	//break;
     	 }else{
     		 printf("Nicht möglich!");
     	 }
            }
-     printf("Punktestand Spieler %d: %d\n",aktiverSpieler->spielerNummer , aktiverSpieler->punktestand);
      ZeigeSpielfeld();
 }while(cBewegung != 115 && cBewegung != 27); //27 == ESC
 }
@@ -567,6 +574,9 @@ void setzeSpielstein(Spielstein * ausBeutel[], int spielsteinNr, int x, int y)
 {
 	Spielfeld[x][y].spielstein = ausBeutel[spielsteinNr];
 	Spielfeld[x][y].Besetzt = true;
+	Spielfeld[x][y].spielstein->xPos = x;
+	Spielfeld[x][y].spielstein->yPos = y;
+
 	ausBeutel[spielsteinNr]=0;//Spielstein aus Beutel entfernen
 }
 
@@ -726,10 +736,11 @@ bool darfsetzen(int x, int y, Spielstein * st)
 }
 
 //Rechnet die Punkte aus, welcher ein neu gelegter Spielstein an Position x,y einbringt.
-int punkteRechnen(int x, int y)
+int punkteRechnen(Spielstein * reihe[])
 {
-	if(!Spielfeld[x][y].Besetzt)return 0; // Ist das Spielfeld nicht besetzt, gibt es auch keine Punkte!
 	int endpunktzahl = 1; //Ein Punkt für den Ausgangsspielstein
+	for(int i=0;reihe[i]!=0;i++){
+	if(!Spielfeld[x][y].Besetzt)return 0; // Ist das Spielfeld nicht besetzt, gibt es auch keine Punkte!
 
 	int punkteReihe = 0;
 	for(int off = -1; off==-1 || off==1;off += 2){
@@ -755,6 +766,8 @@ int punkteRechnen(int x, int y)
 	if(punkteReihe==anzahlFarben)punkteReihe*=2; //Qwirkle!
 	endpunktzahl +=punkteReihe;
 
+
+	}
 	return endpunktzahl;
 }
 
