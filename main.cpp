@@ -357,6 +357,7 @@ void naechsterSpieler() // setzt den naechsten Spieler als aktiven Spieler
 	for(int i = 0 ;i<iBreite;i++)aktiverSpieler->setzendeReihe[i]=0;
 	aktiverSpieler->zugBeendet = false;
 	aktiverSpieler->darfSteineTauschen = true;
+	fuelleSpielsteinBeutel(aktiverSpieler->spielsteinBeutel); //Spielsteinbeutel fuellen
 	printf("Spieler %d ist an der Reihe!\n\n",aktiverSpieler->spielerNummer);
 }
 
